@@ -1,5 +1,21 @@
 /* 
 Evaluator classes and tests
+
+Goals:
+
+- given a function with options
+    f(x, opt1, opt2, ...)
+  encapsule it into an object that works as
+    F f(opt1, opt2, ...);
+    f(x);
+
+- given functions
+    f1(x), f2(x)
+  define operators that gives the functional sum, product... 
+  which works as
+    F f = f1 * f2;
+    f(x);
+
 This file only serves as an example
 Use g++ for compilation
 */

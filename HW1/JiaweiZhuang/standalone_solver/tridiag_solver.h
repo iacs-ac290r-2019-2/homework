@@ -1,0 +1,1 @@
+int tridiag_solver(int N, float* dl, float* d, float *du, float *f);

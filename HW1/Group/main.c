@@ -49,14 +49,24 @@ int main(int argc, char* argv[])
     // Show result
     // -----------------------
 
+    printf("=================== \n");
+    printf("Problem specification \n");
+    printf("=================== \n");
+
     printf("Problem size N: %i \n", N);
+    printf("Boundary condition: h_bound=%2.2f, g_bound= %2.2f \n", h_bound, g_bound);
     
-    printf("K_diag and K_subdiag: \n");
+    printf("=================== \n");
+    printf("Value of matrices \n");
+    printf("=================== \n");
+
+    printf("K_diag: \n");
     for(int i = 0; i < N; i++) {
             printf("%f ", K_diag[i]);
         }
     printf("\n");
 
+    printf("K_subdiag: \n");
     for(int i = 0; i < N-1; i++) {
             printf("%f ", K_subdiag[i]);
         }

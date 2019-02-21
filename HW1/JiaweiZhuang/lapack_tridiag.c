@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     info = LAPACKE_dgtsv(LAPACK_COL_MAJOR,n,nrhs,a,b,c,f,ldb);
 
     // print result to check
-    for(int i = 0; i < N; i++) {
+    for(int i = 0; i < N; i++) { 
             printf("%f ", f[i]);
         }
     printf("\n");

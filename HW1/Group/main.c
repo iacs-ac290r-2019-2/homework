@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+#include "tridiag_solver.h"
+#include "construct_matrix.h"
+
 #define N 10  // Number of nodes
 
 int main(int argc, char* argv[])
@@ -43,10 +46,29 @@ int main(int argc, char* argv[])
     tridiag_solver(N, K_diag, K_subdiag, F, u);
     
     // -----------------------
-    // Output result
+    // Show result
     // -----------------------
     
-    // Print result to check
+    printf("K_diag and K_subdiag: \n");
+    for(int i = 0; i < N; i++) {
+            printf("%f ", K_diag[i]);
+        }
+    printf("\n");
+
+    for(int i = 0; i < N-1; i++) {
+            printf("%f ", K_subdiag[i]);
+        }
+    printf("\n");
+
+
+    printf("RHS vector F: \n");
+    for(int i = 0; i < N; i++) {
+            printf("%f ", F[i]);
+        }
+    printf("\n");
+
+
+    printf("Solution u: \n");
     for(int i = 0; i < N; i++) {
             printf("%f ", u[i]);
         }

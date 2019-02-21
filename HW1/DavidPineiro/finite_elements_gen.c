@@ -55,10 +55,6 @@ float f_1(float x){
 	return x*x;
 }
 
-float f_2(float x){
-	return x*x;
-}
-
 /* Integration using Simpson's rule */ 
 float simpson (float (*f)(float), int no, float min, float max){  
    int n;				 
@@ -81,18 +77,8 @@ float simpson (float (*f)(float), int no, float min, float max){
    return (sum);
 }  
 
-float NA_f_mixer(float (*N_A_f)(float), float (*f)(float), int A, int n){
-	float mixer(float x){
-		return N_A_f(x, A, n)*f(x);
-	}
-	return *mixer;
-}
 
-float NA_f_1_mixer(float x){
-	return f_1(x)*N_A(x, 1, 10)
-}
 
-// ignore 
 // float Na_f(float x){
 // 	return 
 // }
@@ -122,13 +108,11 @@ int main(){
 	float diag[5];
 	float t_diag[4];
 	// float result = h_a(3, a);
-	// K_AB_matrix(5, diag, t_diag);
+	K_AB_matrix(5, diag, t_diag);
 
-	// for(int j=0; j<5; j++){
-	// 	printf("%f ", diag[j]);
-	// }
-	float m = NA_f_mixer(N_A, f_1, 2, 5);
-	printf("val = %f", m(3))
+	for(int j=0; j<5; j++){
+		printf("%f ", diag[j]);
+	}
 	// printf("neg one = %f \n", simpson(*f_1, 100, 0, 10));
 	// printf("mix = %f \n", f_mixer(*f_1, *f_1)(3.0));
 	// printf("hello world = %f\n", result);

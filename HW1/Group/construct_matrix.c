@@ -17,7 +17,7 @@ void compute_F(int N, float h_bound, float g_bound, float *F)
     // Some fake F!
     // TODO: Use correctly computed F!
 
-    for(int j=0; j<N-1; ++j){
+    for(int j=0; j<N; ++j){
         F[j] = j * h_bound + g_bound;
 	}
 }

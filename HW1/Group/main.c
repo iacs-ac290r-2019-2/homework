@@ -48,6 +48,8 @@ int main(int argc, char* argv[])
     // -----------------------
     // Show result
     // -----------------------
+
+    printf("Problem size N: %i \n", N);
     
     printf("K_diag and K_subdiag: \n");
     for(int i = 0; i < N; i++) {

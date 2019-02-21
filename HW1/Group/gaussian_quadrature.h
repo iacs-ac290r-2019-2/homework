@@ -1,10 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
-const float SQRT3 = sqrt(3.);
-const float SQRT3_INV = 1./SQRT3;
-
 void gaussian_quadrature_1(float* xx, float* ww);
 
 void gaussian_quadrature_2(float* xx, float* ww);

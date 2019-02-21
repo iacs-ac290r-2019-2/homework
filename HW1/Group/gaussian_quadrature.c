@@ -1,4 +1,10 @@
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 #include "gaussian_quadrature.h"
+
+const float SQRT3 = sqrt(3.);
+const float SQRT3_INV = 1./SQRT3;
 
 void gaussian_quadrature_1(float* xx, float* ww) {
     static float xx_[1] = {0.};
@@ -19,7 +25,6 @@ void gaussian_quadrature_2(float* xx, float* ww) {
 }
 
 void gaussian_quadrature(size_t n, float* xx, float* ww) {
-    
     if (n == 1)
         gaussian_quadrature_1(xx, ww);
     else if (n == 2)
@@ -67,7 +72,7 @@ float int_local_pNpN(size_t a, size_t b) {
     float* ww = new float[n];
     gaussian_quadrature(n, xx, ww);
     float s = 0.;
-    for (int i=0; i<0; i++) {
+    for (int i=0; i<n; i++) {
         s += local_pN(xx[i], a) * local_pN(xx[i], b) * ww[i];
     }
     delete [] xx;

@@ -13,8 +13,12 @@ int main(int argc, char* argv[])
 
     // Problem specification. Can change by users.
     float h_bound = 1.0;
-    float g_bound = 0.0;
+    float g_bound = 1.0;
     // f(x) is hard-coded elsewhere
+    float f[N]; 
+    for (int i=0; i<N; i++) {
+        f[i] = 1.;
+    }
 
     // values that will be computed later
     float K_diag[N]; // major diagonal
@@ -29,12 +33,14 @@ int main(int argc, char* argv[])
     // Construct tri-diagonal matrix K
     // Input: N
     // Output: K_diag, K_subdiag
-    compute_K(N, K_diag, K_subdiag);
+    // compute_K(N, K_diag, K_subdiag);
 
     // Construct right-hand side vector F
     // Input: N, h_bound, g_bound
     // Output: F
-    compute_F(N, h_bound, g_bound, F);
+    // compute_F(N, h_bound, g_bound, F);
+
+    compute_KF(N, h_bound, g_bound, f, K_diag, K_subdiag, F);
 
     // -----------------------
     // Construct matrices

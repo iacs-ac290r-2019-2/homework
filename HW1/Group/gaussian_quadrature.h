@@ -1,14 +1,18 @@
-void gaussian_quadrature_1(float* xx, float* ww);
+// void gaussian_quadrature_1(float* xx, float* ww);
 
-void gaussian_quadrature_2(float* xx, float* ww);
+// void gaussian_quadrature_2(float* xx, float* ww);
 
-void gaussian_quadrature(size_t n, float* xx, float* ww);
+// void gaussian_quadrature(size_t n, float* xx, float* ww);
 
-float local_N(float xx, size_t a);
+float N_local(size_t a, float xx);
 
-float local_pN(float xx, size_t a);
+float pN_local(size_t a, float xx);
 
-float int_local_NN(size_t a, size_t b);
+void NN_local_intmat(float* ddiag, float* ssub);
 
-float int_local_pNpN(size_t a, size_t b);
+void pNpN_local_intmat(float* ddiag, float* ssub);
+
+void NN_global_intmat(size_t N, float* diag, float* sub);
+
+void pNpN_global_intmat(size_t N, float* diag, float* sub);
 

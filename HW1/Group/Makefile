@@ -1,4 +1,4 @@
-CC := g++
+CC := gcc
 LDLIBS := -llapacke
 
 all: main.exe

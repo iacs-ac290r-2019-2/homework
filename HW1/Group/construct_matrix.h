@@ -4,4 +4,4 @@
 
 // void compute_F(int N, float h_bound, float g_bound, float *F);
 
-void compute_KF(int N, float h_bound, float g_bound, float* f, float* K_diag, float* K_sub, float* F);
+void compute_KF(size_t N, float h_bound, float g_bound, float* f, float* K_diag, float* K_sub, float* F);

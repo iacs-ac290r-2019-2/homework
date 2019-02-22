@@ -54,7 +54,7 @@
 //     return;
 // }
 
-void compute_KF(int N, float h_bound, float g_bound, float* f, float* K_diag, float* K_sub, float* F) {
+void compute_KF(size_t N, float h_bound, float g_bound, float* f, float* K_diag, float* K_sub, float* F) {
     float* NN_diag   = malloc((N+1)*sizeof(float));
     float* NN_sub    = malloc( N   *sizeof(float));
     float* pNpN_diag = malloc((N+1)*sizeof(float));

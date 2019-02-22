@@ -63,19 +63,14 @@ void compute_KF(int N, float h_bound, float g_bound, float* f, float* K_diag, fl
     NN_global_intmat  (N, NN_diag,   NN_sub  );
     pNpN_global_intmat(N, pNpN_diag, pNpN_sub);
 
-    printf("%f\n", pNpN_diag[0]);
     memcpy(K_diag, pNpN_diag,  N   *sizeof(float));
     memcpy(K_sub,  pNpN_sub,  (N-1)*sizeof(float));
 
     memset(F, 0, N*sizeof(float));
-    for (size_t A=0; A<N+1; A++) {
-        F[A]   += NN_diag[A] * f[A];
+    for (size_t A=1; A<N; A++) {
+        F[A] += NN_sub[A] * f[A+1] + NN_diag[A] * f[A] + NN_sub[A-1] * f[A-1];
     }
-    for (size_t A=0; A<N; A++) {
-        F[A]   += NN_sub[A]  * f[A+1];
-        F[A+1] += NN_sub[A]  * f[A];
-    }
-    F[0] += h_bound;
+    F[0]   +=  h_bound + NN_sub[0] * f[1] + NN_diag[0] * f[0];
     F[N-1] += -g_bound * pNpN_sub[N-1];
 
     free(NN_diag);

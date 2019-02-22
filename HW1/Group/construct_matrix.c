@@ -68,10 +68,10 @@ void compute_KF(int N, float h_bound, float g_bound, float* f, float* K_diag, fl
     memcpy(K_sub,  pNpN_sub,  (N-1)*sizeof(float));
 
     memset(F, 0, N*sizeof(float));
-    for (size_t A=0; A<N; A++) {
+    for (size_t A=0; A<N+1; A++) {
         F[A]   += NN_diag[A] * f[A];
     }
-    for (size_t A=0; A<N-1; A++) {
+    for (size_t A=0; A<N; A++) {
         F[A]   += NN_sub[A]  * f[A+1];
         F[A+1] += NN_sub[A]  * f[A];
     }

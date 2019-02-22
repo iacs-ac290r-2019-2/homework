@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
     float h_bound = 1.0;
     float g_bound = 1.0;
     // f(x) is hard-coded elsewhere
-    float f[N]; 
-    for (int i=0; i<N; i++) {
+    float f[N+1]; 
+    for (int i=0; i<N+1; i++) {
         f[i] = 1.;
     }
 
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
     float K_diag[N]; // major diagonal
     float K_subdiag[N-1]; // sub diagonal
     float F[N]; // right hand side
-    float u[N]; // solution on nodes
+    float u[N+1]; u[N]=g_bound; // solution on nodes
 
     // -----------------------
     // Construct global matrices K and F
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 
 
     printf("Solution u: \n");
-    for(int i = 0; i < N; i++) {
+    for(int i = 0; i < N+1; i++) {
             printf("%f ", u[i]);
         }
     printf("\n");

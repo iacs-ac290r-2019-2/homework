@@ -3,7 +3,7 @@
 #include "tridiag_solver.h"
 #include "construct_matrix.h"
 
-#define N 10  // Number of nodes
+#define N 100  // Number of nodes
 
 int main(int argc, char* argv[])
 {

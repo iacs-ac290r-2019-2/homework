@@ -17,7 +17,7 @@ See JiaweiZhuang/lapack_image/Dockerfile and https://cloud.docker.com/repository
 Install Docker and then:
 
     docker pull zhuangjw/lapack
-    docker run --rm -it -v $(pwd):/work lapack
+    docker run --rm -it -v $(pwd):/work zhuangjw/lapack
     cd /work
 
 ## On Harvard Odyssey

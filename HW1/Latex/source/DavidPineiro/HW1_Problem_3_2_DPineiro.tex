@@ -1,0 +1,13 @@
+\begin{solution}
+Find $u^h \in V^h$ such that $\forall$ $w^h \in V^h$:\\
+
+$a \int_0^{1} w^h \partial_x u^h dx - \lambda\int_0^{1} w^h u^h dx + k\int_0^1 \partial_x w^h \partial_x u^h dx = \int_0^1 fw^h dx + b_1 w^h(1)$\\
+
+Now, let us assume that $u^h$ has the following $u^h = v^h + g^h$ where $g^h(0) = u_0$, still meeting the conditions to be in the $V^h$ function subspace. We proceed to rewrite the function in the following form:\\
+
+$$a \int_0^{1} w^h (\partial_x v^h + \partial_x g^h) dx - \lambda\int_0^{1} w^h (v^h + g^h) dx + k\int_0^1 \partial_x w^h (\partial_x v^h + \partial_x g^h) dx = \int_0^1 fw^h dx + b_1 w^h(1)$$
+
+\begin{dmath}
+a \int_0^{1} w^h \partial_x v^h dx - \lambda\int_0^{1} w^h v^h dx + k\int_0^1 \partial_x w^h \partial_x v^h dx= \int_0^1 fw^h dx + b_1 w^h(1) - a \int_0^{1} w^h \partial_x g^h dx + \lambda\int_0^{1} w^h g^h dx - k\int_0^1 \partial_x w^h \partial_x g^h dx
+\end{dmath}
+\end{solution}

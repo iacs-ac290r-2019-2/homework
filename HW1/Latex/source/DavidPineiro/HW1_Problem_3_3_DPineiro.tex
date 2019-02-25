@@ -1,0 +1,49 @@
+\begin{solution}
+Now, let 
+
+$$w^h = \sum_{A=1}^{n}W_A N_A(x) \qquad N_A(1) = 0, \, \forall \, A=[1, ..., n]$$
+$$u^h = \sum_{B=1}^{n}U_B N_B(x) + u_0 N_{n + 1}(x) \qquad N_B(0) = 0 , \, \forall \, B=[1, ..., n], \, N_{n+1}(0) = 0$$\\
+
+Therefore, defining: 
+
+$$v^h = \sum_{B=1}^{n}U_B N_B(x)$$
+
+$$g^h = u_0 N_{n + 1}(x) $$
+
+We proceed now to plug these values into the Galerkin Statement:
+
+\begin{dmath}
+a \int_0^{1} \Big(\sum_{A=1}^{n}W_A N_A(x)\Big) \partial_x \Big(\sum_{B=1}^{n}U_B N_B(x)\Big) dx - \lambda\int_0^{1} \Big(\sum_{A=1}^{n}W_A N_A(x)\Big) \Big(\sum_{B=1}^{n}U_B N_B(x)\Big) dx + k\int_0^1 \partial_x \Big(\sum_{A=1}^{n}W_A N_A(x)\Big) \partial_x \Big(\sum_{B=1}^{n}U_B N_B(x)\Big) dx= \int_0^1 f \Big(\sum_{A=1}^{n}W_A N_A(x)\Big) dx + b_1 \Big(\sum_{A=1}^{n}W_A N_A(1)\Big) - a \int_0^{1} \Big(\sum_{A=1}^{n}W_A N_A(x)\Big) \partial_x \Big(u_0 N_{n + 1}(x)\Big) dx + \lambda\int_0^{1} \Big(\sum_{A=1}^{n}W_A N_A(x)\Big) \Big(u_0 N_{n + 1}(x)\Big) dx - k\int_0^1 \partial_x \Big(\sum_{A=1}^{n}W_A N_A(x)\Big) \partial_x \Big(u_0 N_{n + 1}(x)\Big) dx
+\end{dmath}
+
+\begin{dmath}
+\sum_{A=1}^{n}W_A \Bigg[ a \int_0^{1} N_A(x) \partial_x \Big(\sum_{B=1}^{n}U_B N_B(x)\Big) dx - \lambda\int_0^{1} N_A(x) \Big(\sum_{B=1}^{n}U_B N_B(x)\Big) dx + k\int_0^1 \partial_x N_A(x) \partial_x \Big(\sum_{B=1}^{n}U_B N_B(x)\Big) dx - \int_0^1 f N_A(x) dx - b_1 N_A(1) + a \int_0^{1} N_A(x) \partial_x \Big(u_0 N_{n + 1}(x)\Big) dx - \lambda\int_0^{1} N_A(x) \Big(u_0 N_{n + 1}(x)\Big) dx + k\int_0^1 \partial_x N_A(x) \partial_x \Big(u_0 N_{n + 1}(x)\Big) dx \Bigg] = 0
+\end{dmath}
+\end{solution}
+\begin{solution}
+\begin{dmath}
+\sum_{A=1}^{n}W_A \Bigg[ \sum_{B=1}^{n}U_B \Bigg( a \int_0^{1} N_A(x) \partial_x N_B(x) dx - \lambda\int_0^{1} N_A(x) N_B(x) dx + k\int_0^1 \partial_x N_A(x) \partial_x N_B(x) dx \Bigg) - \int_0^1 f N_A(x) dx - b_1 N_A(1) + a \int_0^{1} N_A(x) \partial_x \Big(u_0 N_{n + 1}(x)\Big) dx - \lambda\int_0^{1} N_A(x) u_0 N_{n + 1}(x) dx + k\int_0^1 \partial_x N_A(x) \partial_x \Big(u_0 N_{n + 1}(x)\Big) dx \Bigg] = 0
+\end{dmath}
+
+To simplify the formula, let us redefine some of the expressions above:
+
+\begin{align}
+\kappa_{AB} &= a \int_0^{1} N_A(x) \partial_x N_B(x) dx - \lambda\int_0^{1} N_A(x) N_B(x) dx + k\int_0^1 \partial_x N_A(x) \partial_x N_B(x) dx \\
+F_a &= \int_0^1 f N_A(x) dx\\
+G_a &= a \int_0^{1} N_A(x) \partial_x \Big(u_0 N_{n + 1}(x)\Big) dx\\
+H_a &= b_1 N_A(1)\\
+I_a &= \lambda\int_0^{1} N_A(x) u_0 N_{n + 1}(x) dx\\
+J_a &= k\int_0^1 \partial_x N_A(x) \partial_x \Big(u_0 N_{n + 1}(x)\Big) dx\\
+\mathbf{F}_A &= F_a + G_a - H_a + I_a - J_a
+\end{align}
+
+Therefore, rewriting our expression above as:
+
+\begin{dmath}
+\sum_{A=1}^{n}W_A \Big[ \Big( \sum_{B=1}^{n}U_B( \kappa_{AB}) - \mathbf{F}_A\Big] = 0
+\end{dmath}
+
+In order for the expression to hold, the following must be true:\\
+
+$$\sum_{B=1}^{n}U_B( \kappa_{AB}) = \mathbf{F}_A$$
+\end{solution}

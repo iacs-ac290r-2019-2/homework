@@ -1,0 +1,26 @@
+\begin{solution} 
+
+Bring the complete form of $\beta_{n}\left(z\right)$ (obtained in the previous question) into the original expansion:
+
+    \begin{align*}
+      u\left(y, z\right) = \sum_{n=1}^{\infty}{\beta_{n}\left(z\right)\sin\left(\frac{n\pi}{a}y\right)}.
+    \end{align*}
+
+Leads to the desired result that
+
+    \begin{align*}
+      u\left(y,z\right) = \sum_{n=1}^{\infty}{2C_{n} 
+        \sinh\left(\dfrac{\gamma_{n}}{2}\left(z-b\right)\right)\left[\cosh\left(\dfrac{\gamma_{n}}{2}\left(z+b\right)\right) - 
+          \cosh\left(\dfrac{\gamma_{n}}{2}\left(z-b\right)\right)\right]\sin\left(\gamma_{n}y\right)}.
+    \end{align*}
+    
+\begin{itemize}
+\item The boundary condition $u(y=0) = u(y=a) = 0$ is satisfied as $\sin\left(\frac{n\pi}{a}y\right) = 0$ when $y=0$ or $y=a$
+\item $u(z=b) = 0$ is satisfied as $\sinh\left(\dfrac{\gamma_{n}}{2}\left(z-b\right)\right)=0$ when $z=b$.
+
+\item $u(z=b) = 0$ is satisfied as $[\cosh\left(\dfrac{\gamma_{n}}{2}\left(z+b\right)\right)-\cosh\left(\dfrac{\gamma_{n}}{2}\left(z-b\right)\right) = 0$ when $z=0$.
+\end{itemize}
+
+So all boundary conditions are satisfied.
+
+\end{solution} 

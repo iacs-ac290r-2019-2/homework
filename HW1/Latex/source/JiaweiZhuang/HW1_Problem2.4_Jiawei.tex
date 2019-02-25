@@ -1,0 +1,82 @@
+\begin{solution} 
+
+Start with 
+    \begin{align*}
+      w_{1}v_{1}^{\prime} + w_{2}v_{2}^{\prime} &= 0 \\
+      w_{1}^{\prime}v_{1}^{\prime} + w_{2}^{\prime}v_{2}^{\prime} &= q_{n}
+    \end{align*}
+
+Or equivalently,
+    \begin{align*}
+      \sinh({\gamma_{n}z}) v_{1}^{\prime} + \cosh({\gamma_{n}z}) v_{2}^{\prime} &= 0 \\
+      \cosh({\gamma_{n}z}) v_{1}^{\prime} + \sinh({\gamma_{n}z}) v_{2}^{\prime} &= \dfrac{q_{n}}{\gamma_{n}}    
+    \end{align*}
+
+Solve for $v_{1}^{\prime}$ and $v_{2}^{\prime}$:
+    \begin{align*}
+       v_{1}^{\prime} &= \frac{q_{n}}{\gamma_{n}}\cosh\left(\gamma_{n}z\right)  \\
+       v_{2}^{\prime} &= -\frac{q_{n}}{\gamma_{n}}\sinh\left(\gamma_{n}z\right)
+    \end{align*}
+
+Integrate:
+    \begin{align*}
+      v_{1} &= \frac{q_{n}}{\gamma_{n}^{2}}\sinh\left(\gamma_{n}z\right) + \alpha_{1} \\
+      v_{2} &= -\frac{q_{n}}{\gamma_{n}^{2}}\cosh\left(\gamma_{n}z\right) + \alpha_{2} 
+    \end{align*}
+
+Bring them back to the full solution:
+    \begin{align*}
+    	\beta_{n}\left(z\right) &= v_{1}\left(z\right)w_{1}\left(z\right) + v_{2}\left(z\right)w_{2}\left(z\right) \\
+	&= ( \frac{q_{n}}{\gamma_{n}^{2}}\sinh\left(\gamma_{n}z\right) + \alpha_{1})\sinh({\gamma_{n}z}) 
+	- (\frac{q_{n}}{\gamma_{n}^{2}}\cosh\left(\gamma_{n}z\right) - \alpha_{2})\cosh({\gamma_{n}z})
+    \end{align*}
+
+It should satisfy the boundary condition:
+    \begin{align*}
+      \beta_{n}(0) = \beta_{n}(b) = 0
+    \end{align*}
+
+\end{solution} 
+
+
+\begin{solution} 
+(continued)
+
+    \begin{align*}
+      0 = \beta_{n}(0) 
+        &= ( \frac{q_{n}}{\gamma_{n}^{2}}\sinh\left(\gamma_{n}0\right) + \alpha_{1})\sinh({\gamma_{n}0}) 
+	- (\frac{q_{n}}{\gamma_{n}^{2}}\cosh\left(\gamma_{n}0\right) - \alpha_{2})\cosh({\gamma_{n}0}) \\
+	& = - (\frac{q_{n}}{\gamma_{n}^{2}} - \alpha_{2})
+    \end{align*}
+    
+    So     
+    \begin{align*}
+    	\alpha_{2} = \frac{q_{n}}{\gamma_{n}^{2}}
+    \end{align*}
+    
+     \begin{align*}
+      0 = \beta_{n}(b) 
+        &= ( \frac{q_{n}}{\gamma_{n}^{2}}\sinh\left(\gamma_{n}b\right) + \alpha_{1})\sinh({\gamma_{n}b}) 
+	- (\frac{q_{n}}{\gamma_{n}^{2}}\cosh\left(\gamma_{n}b\right) - \alpha_{2})\cosh({\gamma_{n}b})
+    \end{align*}
+
+    So     
+    \begin{align*}
+    	\alpha_{1} = \frac{q_{n}}{\gamma_{n}^{2} \sinh(\gamma_{n}b) } (1 - {\cosh({\gamma_{n}b})} )
+    \end{align*}
+
+Bring back to $\beta_{n}\left(z\right)$:
+ \begin{align*}
+     	\beta_{n}\left(z\right) 
+	&= [ \frac{q_{n}}{\gamma_{n}^{2}}\sinh\left(\gamma_{n}z\right) + \frac{q_{n}}{\gamma_{n}^{2} \sinh(\gamma_{n}b)  } 
+	(1 - {\cosh({\gamma_{n}b})} )] \sinh({\gamma_{n}z}) 
+	- (\frac{q_{n}}{\gamma_{n}^{2}}\cosh\left(\gamma_{n}z\right) -  \frac{q_{n}}{\gamma_{n}^{2}})\cosh({\gamma_{n}z}) \\
+	&= \frac{q_{n}}{\gamma_{n}^{2}\sinh\left(\gamma_{n}b\right)} 
+	[\sinh^2(\gamma_{n}z) \sinh(\gamma_{n}b) + \sinh(\gamma_{n}z) - \cosh(\gamma_{n}b) \sinh^2(\gamma_{n}z) \\
+	& \text{  (line continue)   } - \sinh(\gamma_{n}b) \cosh^2(\gamma_{n}z) + \sinh(\gamma_{n}b) \cosh(\gamma_{n}z)] \\
+	&= C_{n}  	[ [ \sinh^2(\gamma_{n}z)-\cosh^2(\gamma_{n}z) ] \sinh(\gamma_{n}b) + \sinh(\gamma_{n}z) - \cosh(\gamma_{n}b) \sinh^2(\gamma_{n}z) + \sinh(\gamma_{n}b) \cosh(\gamma_{n}z)] \\
+	&= C_{n}  	[ -\sinh(\gamma_{n}b) + \sinh(\gamma_{n}z) - \cosh(\gamma_{n}b) \sinh^2(\gamma_{n}z) + \sinh(\gamma_{n}b) \cosh(\gamma_{n}z)] \\
+\end{align*}
+which is the desired result.
+
+\end{solution} 

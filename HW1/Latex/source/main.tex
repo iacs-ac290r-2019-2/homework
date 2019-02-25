@@ -1,0 +1,364 @@
+\documentclass[11pt]{article}
+
+% Load packages
+\usepackage{float} % for formatting figures
+\usepackage{amsmath, amsfonts, breqn} % for math
+\usepackage{graphicx} % for figures
+\usepackage[margin=1in]{geometry} % to set margins
+\usepackage{tcolorbox} % to create nice boxes
+\tcbuselibrary{skins,breakable} % extra libraries for the nice boxes
+
+% Define a custom box for the solutions. Don't change this!
+\newtcolorbox[]{solution}
+    {colframe=red!20, 
+        colback=white, 
+        sharp corners,
+        title=Solution,
+        enhanced,
+        coltitle=black,
+        fonttitle=\bfseries,
+        attach boxed title to top left={yshift*=-\tcboxedtitleheight/2, xshift=3mm},
+        boxed title style={sharp corners, colback=red!20}
+        }
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan
+}
+
+
+
+% Write the document
+\begin{document}
+
+  \section{Problem 1:  Couette Flow}
+    Couette flow is a classic basic flow pattern in which a fluid is confined between two, smooth parallel plates.  The
+bottom plate (at $y=-h$) is stationary while the top plate (at $y=h$) is moving with a constant velocity $U$.  It is assumed
+that the flow is:
+    \begin{enumerate}
+      \item Steady
+      \item Fully developed
+      \item Two-dimensional (independent of $z$)
+      \item Zero pressure-gradient
+    \end{enumerate}
+    Use no-slip boundary conditions.  Figure~\ref{fig:couette} shows a diagram of the flow configuration.
+    \begin{figure}[h!]
+      \centering
+      \begin{tikzpicture}
+        \draw [ultra thick] (3,0) -- (10,0);
+        \draw [ultra thick] (3,-3) -- (10,-3);
+        \draw [very thick, ->] (10.25,0) -- (11.25,0);
+        \node at (2.0, 0) [] {$y=h$};
+        \node at (2.0, -3) [] {$y=-h$};
+        \node at (11.5, 0) [] {$U$};
+      \end{tikzpicture}
+      \caption{The Couette flow configuration.}
+      \label{fig:couette}
+    \end{figure}
+
+    \textbf{Calculate the following:}
+    \begin{enumerate}
+      \item The velocity field 
+      \item The vorticity field
+      \item The shear stress
+      \item The volume flow rate 
+      \item The average and maximum velocities in the channel
+        \begin{itemize}
+          \item Hint:  $u_{\textrm{ave}} = Q / h$ where $Q$ is the volume flow rate.
+        \end{itemize}
+    \end{enumerate}
+
+    \textbf{Plot:}
+    Make a plot of the velocity profile at a few different values of $U$.  Put $y$ on the $y-$ axis and $u\left(y\right)$ on
+the $x-$ axis.
+
+\input{YX/HW1_Problem1_YiqiXie.tex}
+
+\newpage
+    \section{Problem 2:  Rectangular Duct Flow}
+    Consider flow through a duct of rectangular cross section as shown in Figure~\ref{fig:rect_duct}.  Make the following
+assumptions:
+    \begin{itemize}
+      \item $1$-component flow (that is $v = w = 0$)
+      \item Fully developed flow in $x$
+      \item Steady flow
+    \end{itemize}
+    Use no-slip boundary conditions on all surfaces.  Finally, note that the flow is driven by a prescribed (known) pressure
+gradient in the $x-$ direction.
+
+    \begin{figure}[h!]
+      \centering
+      \begin{tikzpicture}
+        \draw [ultra thick] (0,0) rectangle (4,3);
+        \draw [very thick, ->] (0,-0.25) -- (0,4);
+        \draw [very thick, ->] (-0.25,0) -- (5,0);
+        \node at (5, -0.25) {$z$};
+        \node at (-0.25, 4) {$y$};
+        \node at (2, -0.25) {$b$};
+        \node at (-0.25, 1.5) {$a$};
+      \end{tikzpicture}
+      ~~~
+      \begin{tikzpicture}
+        \draw [ultra thick] (0,3) -- (6,3);
+        \draw [ultra thick] (0,0) -- (6,0);
+        \draw [very thick, ->] (3,1.5) -- (4,1.5);
+        \draw [very thick, ->] (3,1.5) -- (3,2.5);
+        \node at (4, 1.25) {$x$};
+        \node at (2.75, 2.5) {$y$};
+        \node at (0, 1.5) {$P_{1}$};
+        \node at (6, 1.5) {$P_{2} < P_{1}$};
+      \end{tikzpicture}
+      \caption{Left:  Cross-section of the rectangular duct. Right: Profile of rectangular duct.}
+      \label{fig:rect_duct}
+    \end{figure}
+
+    \subsection{Governing Equations}
+    Using the provided assumpsions, show that the Navier-Stokes equations reduce to, 
+    \begin{align}
+      \partial_{y}^{2}u + \partial_{z}^{2}u = \frac{1}{\mu}\partial_{x}P.
+    \end{align}
+    \textbf{What are the boundary conditions?}
+
+\input{JiaweiZhuang/HW1_Problem2.1_Jiawei}
+
+    \subsection{Solving for $u$: Part 1}
+    We have an inhomogenous, linear PDE on our hands.  Let's solve this using the method of eigenfunction expansions.  We
+know that with the current boundary conditions, the homogenous solution to our equation has eigenfunctions that are sines.
+Hence, let's assume a solution of the form,
+    \begin{align}
+      u\left(y, z\right) = \sum_{n=1}^{\infty}{\beta_{n}\left(z\right)\sin\left(\frac{n\pi}{a}y\right)}.
+    \end{align}
+    Plug this assumed form into the governing PDE and show that the unknown coefficients ($\beta_{n}\left(z\right)$) are
+governed by the following inhomogenous ODE,
+    \begin{align}
+      \beta_{n}^{\prime\prime} - \gamma_{n}^{2}\beta_{n} = q_{n} \label{eq:betan}
+    \end{align}
+    where $\left(\cdot\right)^{\prime}$ denotes $d/dz$, 
+    \begin{align}
+      \gamma_{n} = \frac{n\pi}{a}
+    \end{align}
+    and 
+    \begin{align}
+      q_{n} = \dfrac{2}{a}\int_{0}^{a}{Q\sin\left(\gamma_{n}y\right)\ \mathrm{d}y}, \qquad Q = \frac{1}{\mu}\partial_{x}P.
+    \end{align}
+
+    \subsubsection{Some Specific Details}
+    Here is a breakdown of the required steps.
+    \begin{enumerate}
+      \item First show that after plugging the assumed form into the governing PDE the
+resulting expression is 
+      \begin{align}
+        \sum_{n=1}^{\infty}{\beta_{n}^{\prime\prime}\sin\left(\dfrac{n\pi}{a}y\right)} -
+\sum_{n=1}^{\infty}{\beta_{n}\left(\dfrac{n\pi}{a}\right)^{2}\sin\left(\dfrac{n\pi}{a}y\right)} = Q.
+      \end{align}
+      \item Next, multiply by $\sin\left(\dfrac{m\pi}{a}y\right)$ and integrate over $y$.
+      \begin{align}
+        &\int_{0}^{a}{\sum_{n=1}^{\infty}{\beta_{n}^{\prime\prime}\sin\left(\dfrac{n\pi}{a}y\right)\sin\left(\dfrac{m\pi}{a}y\right)}
+\ \mathrm{d}y} -
+\int_{0}^{a}{\sum_{n=1}^{\infty}{\beta_{n}\left(\dfrac{n\pi}{a}\right)^{2}\sin\left(\dfrac{n\pi}{a}y\right)\sin\left(\dfrac{m\pi}{a}y\right)}
+\ \mathrm{d}y} = \nonumber \\
+        &\hspace{2.0em}\int_{0}^{a}{Q\sin\left(\dfrac{m\pi}{a}y\right) \ \mathrm{d}y}.
+      \end{align}
+      \item That's a pretty big mess.  Now, we use a beautiful result:  the orthogonality of sines:
+        \begin{align}
+          \int_{0}^{a}{\sin\left(\dfrac{n\pi}{a}y\right)\sin\left(\dfrac{m\pi}{a}y\right) \ \mathrm{d}y} = 
+          \left\{
+            \begin{array}{ll}
+              0            \qquad n \neq m \\
+              \dfrac{a}{2} \qquad n = m
+            \end{array}
+          \right.
+        \end{align}
+        The main point here is that every single term in the infinite sum is zero \textit{except} for the term where $n=m$.
+      \item The final result is 
+        \begin{align}
+          \beta_{n}^{\prime\prime} - \gamma_{n}^{2}\beta_{n} = \dfrac{2}{a}\int_{0}^{a}{Q\sin\left(\gamma_{n}y\right) \ \mathrm{d}y}
+        \end{align}
+    \end{enumerate}
+
+    \textbf{What are the boundary conditions on $\beta_{n}$}?
+
+\input{JiaweiZhuang/HW1_Problem2.2_Jiawei}
+
+    \subsection{Solving for $\beta_{n}$: The Homogeneous Part}
+    To solve for $\beta_{n}$, we first need to solve the homogeneous equation,
+    \begin{align}
+      \beta_{n}^{\prime\prime} - \gamma_{n}^{2}\beta_{n} = 0.
+    \end{align}
+    Show that the homogeneous solution is 
+    \begin{align}
+      \beta_{n}^{H} = c_{1}w_{1} + c_{2}w_{2}
+    \end{align}
+    where $w_{1} = \sinh\left(\gamma_{n}z\right)$ and $w_{2} = \cosh\left(\gamma_{n}z\right)$ are the two linearly
+independent solutions.
+
+\input{JiaweiZhuang/HW1_Problem2.3_Jiawei}
+
+    \subsection{Solving the Inhomogeneous Part}
+    You can use the method of variation of parameters to solve the inhomogeneous equation.  Let 
+    \begin{align}
+      \beta_{n}\left(z\right) = v_{1}\left(z\right)w_{1}\left(z\right) + v_{2}\left(z\right)w_{2}\left(z\right)
+      \label{eq:var_param}
+    \end{align}
+    where $v_{1}\left(z\right)$ and $v_{2}\left(z\right)$ are the coefficients (parameters) to be varied.  Now
+\textit{assume} that 
+    \begin{align}
+      w_{1}v_{1}^{\prime} + w_{2}v_{2}^{\prime} = 0. \label{eq:var_const}
+    \end{align}
+    Then, by plugging~\eqref{eq:var_param} into~\eqref{eq:betan} and using~\eqref{eq:var_const} yields two equations for
+$v_{1}^{\prime}$ and $v_{2}^{\prime}$.  These two equations are, 
+    \begin{align}
+      w_{1}v_{1}^{\prime} + w_{2}v_{2}^{\prime} &= 0 \\
+      w_{1}^{\prime}v_{1}^{\prime} + w_{2}^{\prime}v_{2}^{\prime} &= q_{n}.
+    \end{align}
+    Show that 
+    \begin{align}
+      v_{1} &= \frac{q_{n}}{\gamma_{n}^{2}}\sinh\left(\gamma_{n}z\right) + \alpha_{1} \\
+      v_{2} &= -\frac{q_{n}}{\gamma_{n}^{2}}\cosh\left(\gamma_{n}z\right) + \alpha_{2} 
+    \end{align}
+    where $\alpha_{1}$ and $\alpha_{2}$ are constants of integration.
+
+    Finally, show that 
+    \begin{align}
+      \beta_{n}\left(z\right) &= C_{n} 
+        \left[-\sinh\left(\gamma_{n}b\right) + \sinh\left(\gamma_{n}z\right) - 
+          \left(\sinh\left(\gamma_{n}z\right)\cosh\left(\gamma_{n}b\right) - 
+            \cosh\left(\gamma_{n}z\right)\sinh\left(\gamma_{n}b\right)\right)\right] \\
+      &=  C_{n}
+           \left[\sinh\left(\gamma_{n}z\right) - \sinh\left(\gamma_{n}b\right) - 
+            \sinh\left(\gamma_{n}\left(z-b\right)\right)\right] \\
+      &= 2C_{n}\sinh\left(\dfrac{\gamma_{n}}{2}\left(z-b\right)\right) 
+           \left[\cosh\left(\dfrac{\gamma_{n}}{2}\left(z+b\right)\right) - 
+             \cosh\left(\dfrac{\gamma_{n}}{2}\left(z-b\right)\right)\right].
+    \end{align}
+    where 
+    \begin{align}
+      C_{n} = \frac{q_{n}}{\gamma_{n}^{2}\sinh\left(\gamma_{n}b\right)}. 
+    \end{align}
+
+\input{JiaweiZhuang/HW1_Problem2.4_Jiawei}
+
+    \subsection{The Velocity Field}
+    Put everything together to show that,
+    \begin{align}
+      u\left(y,z\right) = \sum_{n=1}^{\infty}{2C_{n} 
+        \sinh\left(\dfrac{\gamma_{n}}{2}\left(z-b\right)\right)\left[\cosh\left(\dfrac{\gamma_{n}}{2}\left(z+b\right)\right) - 
+          \cosh\left(\dfrac{\gamma_{n}}{2}\left(z-b\right)\right)\right]\sin\left(\gamma_{n}y\right)}.
+    \end{align}
+    A good sanity check is to make sure the boundary conditions are satisfied by this solution.
+
+    \subsubsection{Other Thoughts}
+    There are a variety of things that can be computed and inspected from here.  For example:
+    \begin{itemize}
+      \item Calculate the vorticity and streamlines.  Any surprises here?
+      \item How does the solution change if you have different boundary conditions?
+        \begin{itemize}
+          \item Neumann boundary conditions on each surface 
+          \item Dirichlet boundary conditions on all surfaces \textit{except} at $y=a$ for which we have a Neumann condition.
+(This would be like fluid flowing through an open channel.)
+        \end{itemize}
+    \end{itemize}
+    \textbf{Note:}  You are not required to compute any of these for this assignment!
+
+\input{JiaweiZhuang/HW1_Problem2.5_Jiawei}
+
+  \subsection{Vizualization}
+  Now that we have an explicit formula for the velocity field, we can visualize it.  Try to make the following plots:
+  \begin{itemize}
+    \item Plot $u\left(y,z=z^{*}\right)$ at a few values of $z^{*}$ (perhaps near the boundary, $1/4$ of the channel width, and
+at half the channel width).
+    \item Plot $u\left(y=y^{*},z\right)$ at a few values of $y^{*}$ (perhaps near the boundary, $1/4$ of the channel height, and
+at half the channel height).
+    \item Make a surface plot of $u\left(y,z\right)$.
+  \end{itemize}
+
+ \input{JiaweiZhuang/HW1_Problem2.6_Jiawei.tex}
+
+\newpage
+  \section{Problem 3: The Finite Element Method}
+
+  Consider the steady one-dimensional advection-diffusion-reaction equation,
+  \begin{align}
+    a\partial_{x}u -\lambda u - k\partial_{x}^{2}u = f, \qquad x\in\left(0, 1\right)
+    \label{eq:adv-diff-rxn}
+  \end{align}
+  with boundary conditions 
+  \begin{align}
+    u\left(0\right) = u_{0}, \quad -k\partial_{x}u\left(1\right) = b_{1}.
+    \label{eq:adr_bcs}
+  \end{align}
+  In~\eqref{eq:adv-diff-rxn}, $a$ is the constant advection speed, $\lambda > 0$ is the constant reaction coefficient, and $k>0$ 
+  is the constant diffusion coefficient.  
+
+    \subsection{Weak Form}
+    Write the weak form corresponding to the strong form~\eqref{eq:adv-diff-rxn}.  Be sure to specify all function spaces. Don't forget to include any boundary terms.\\
+
+    \input{DavidPineiro/HW1_Problem_3_1_DPineiro.tex}
+
+    \subsection{Galerkin Statement}
+    From the weak form, write the Galerkin statement.  Again, specify all function spaces.\\
+    
+    \input{DavidPineiro/HW1_Problem_3_2_DPineiro.tex}
+
+    \subsection{Finite Element Discretization} Introduce the finite element basis and arrive at a linear algebra problem.  Clearly define the form of all resulting matrices.  You may write everything in terms of the basis functions (i.e. there is no need to directly compute the entries of the matrices).\\
+
+    \input{DavidPineiro/HW1_Problem_3_3_DPineiro.tex}
+
+\newpage
+  \section{Problem 4: Implementation}
+  We wish to use the finite element method to solve 
+  \begin{align}
+    - \partial_{x}^{2} u = f\lr{x}, \qquad x \in \lr{0, 1} \\
+    -\partial_{x}u\lr{0} = \mathcal{h}, \quad u\lr{1} = \mathcal{g}
+  \end{align}
+  for $u\lr{x}$ where $f\lr{x}$ is a known forcing function and $\mathcal{g}$ and $\mathcal{h}$ are constant boundary data.
+
+  Write a one-dimensional finite element code that uses piecewise linear finite elements to solve for $u\lr{x}$.  The
+following specifications are required:
+  \begin{itemize}
+    \item The code should work for any constant $\mathcal{g}$ and $\mathcal{h}$ as well as arbitrary $f\lr{x}$.  These will be inputs to the
+code.
+    \item Other inputs should include the domain size.  You have some flexibility on how to do this.  For example, you may
+pass in a fully-formed mesh if you wish.  Alternatively, you can require the user to specify the number of elements from
+which your code can compute the uniform mesh size.
+      \begin{itemize}
+        \item \textbf{Note:} You may assume a uniform mesh.
+      \end{itemize}
+    \item The code \textbf{must} use the local point of view.  That is, loop over individual elements and perform the finite
+element assembly operation to form the global stiffness matrix and force vector.
+    \item Use Gaussian quadrature to perform the integrals.  Although not strictly necessary here, it will give you some
+intuition for how things are actually done.
+    \item You may use an external library to solve the resulting linear system.
+    \item Use must use a compiled language such as \texttt{C}, \texttt{C++}, or (modern) Fortran.
+    \item Try to submit your job on Odyssey!
+  \end{itemize}
+
+  Some other things you may want to consider are the following:
+  \begin{itemize}
+    \item Start simple.  A natural progression may be the following:
+      \begin{itemize}
+        \item Select $f = 0$, $g = 0$ and $h = 1$ to begin.  The exact solution will be $u = 1 - x$.
+        \item Then make $g = 1$, $h = 1$, $f = 0$.  The exact solution will be $u = 2 - x$.
+        \item Finally, try $g = 1$, $h = 1$, and $f = 1$.  The exact solution will be $u = 2 - x + \dfrac{1}{2}\lr{1 -
+x^{2}}$.
+        \item At this point, you will have some confidence in your code.  This is called code verification.  You can try more
+complicated $f\lr{x}$ if you'd like to.
+      \end{itemize}
+    \item Organize your code into separate files.  Use a \texttt{Makefile} to do the linking.
+      \begin{itemize}
+        \item You may want to have files for the following:
+          \begin{itemize}
+            \item Quadrature routines 
+            \item Stiffness matrix routines 
+            \item Right-hand-size (RHS) routines
+          \end{itemize}
+        \item Feel free to consider other code designs.
+      \end{itemize}
+  \end{itemize}
+  
+   \input{DavidPineiro/HW1_Problem_4_DPineiro.tex}
+
+\end{document}

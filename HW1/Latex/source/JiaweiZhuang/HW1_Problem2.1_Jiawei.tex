@@ -1,0 +1,29 @@
+\begin{solution} 
+
+Because $v = w = 0$, we can only consider the momentum equation for the $u$ component:
+    \begin{align*}
+      \rho(\partial_{t}u + u\partial_{x}u + v\partial_{y}u + w\partial_{z}u) = - \partial_{x}P + {\mu}(\partial_{x}^{2}u + \partial_{y}^{2}u + \partial_{z}^{2}u)
+    \end{align*}
+
+    \begin{itemize}
+    	\item $v\partial_{y}u + w\partial_{z}u$ can be removed because $v = w = 0$
+	\item ``Fully developed in $x$" means $\partial_{x}u=0$, thus the $u\partial_{x}u$ and $\partial_{x}^{2}u$ terms above can be removed. Steady flow means 
+   	\item ``Steady flow" means  $\partial_{t}u=0$
+    \end{itemize}
+   
+The remaining terms are:
+       \begin{align*}
+      0 = - \partial_{x}P + {\mu}(\partial_{y}^{2}u + \partial_{z}^{2}u)
+    \end{align*}
+
+Re-arranging them leads to:
+    \begin{align*}
+      \partial_{y}^{2}u + \partial_{z}^{2}u = \frac{1}{\mu}\partial_{x}P
+    \end{align*}
+    
+The no-slip boundary conditions are 
+    \begin{align*}
+      u(y=0) = u(y=a) = u(z=0) = u(z=b) = 0
+    \end{align*}
+
+\end{solution} 

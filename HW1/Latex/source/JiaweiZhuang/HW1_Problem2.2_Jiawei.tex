@@ -1,0 +1,44 @@
+\begin{solution} 
+
+Start with
+    \begin{align*}
+      u\left(y, z\right) = \sum_{n=1}^{\infty}{\beta_{n}\left(z\right)\sin\left(\frac{n\pi}{a}y\right)}.
+    \end{align*}
+
+Take second-order derivatives:
+    \begin{align*}
+      \partial_{y}^{2}u &= - \sum_{n=1}^{\infty} (\frac{n\pi}{a})^2 {\beta_{n} \left(z\right)\sin\left(\frac{n\pi}{a}y\right)} \\
+      \partial_{z}^{2}u &= \sum_{n=1}^{\infty}{\beta_{n}^{\prime\prime} \left(z\right)\sin\left(\frac{n\pi}{a}y\right)}
+    \end{align*}
+
+Bring into the original PDE:
+    \begin{align*}
+      \partial_{y}^{2}u + \partial_{z}^{2}u = Q
+    \end{align*}
+
+Leads to:
+      \begin{align*}
+        \sum_{n=1}^{\infty}{\beta_{n}^{\prime\prime}\sin\left(\dfrac{n\pi}{a}y\right)} -
+\sum_{n=1}^{\infty}{\beta_{n}\left(\dfrac{n\pi}{a}\right)^{2}\sin\left(\dfrac{n\pi}{a}y\right)} = Q
+      \end{align*}
+
+Multiply by $\sin\left(\dfrac{m\pi}{a}y\right)$ and integrate over $y$:
+      \begin{align*}
+        &\int_{0}^{a}{\sum_{n=1}^{\infty}{\beta_{n}^{\prime\prime}\sin\left(\dfrac{n\pi}{a}y\right)\sin\left(\dfrac{m\pi}{a}y\right)}
+\ \mathrm{d}y} -
+\int_{0}^{a}{\sum_{n=1}^{\infty}{\beta_{n}\left(\dfrac{n\pi}{a}\right)^{2}\sin\left(\dfrac{n\pi}{a}y\right)\sin\left(\dfrac{m\pi}{a}y\right)}
+\ \mathrm{d}y} = \nonumber \\
+        &\hspace{2.0em}\int_{0}^{a}{Q\sin\left(\dfrac{m\pi}{a}y\right) \ \mathrm{d}y}
+      \end{align*}
+
+Using the orthogonality of sines, it becomes:
+        \begin{align*}
+           \dfrac{a}{2}\beta_{m}^{\prime\prime} - \dfrac{a}{2}(\dfrac{m\pi}{a})^{2}\beta_{m} =\int_{0}^{a}{Q\sin\left(\dfrac{m\pi}{a}y\right) \ \mathrm{d}y}
+        \end{align*}
+
+Replace $m$ by $n$ (they are interchangeable at the above step) and use $\gamma_{n}=\dfrac{n\pi}{a}$, the above reduces to the desired result:
+        \begin{align*}
+          \beta_{n}^{\prime\prime} - \gamma_{n}^{2}\beta_{n} = \dfrac{2}{a}\int_{0}^{a}{Q\sin\left(\gamma_{n}y\right) \ \mathrm{d}y}
+        \end{align*}
+
+\end{solution} 

@@ -13,9 +13,4 @@
 
 hostname
 echo $CUDA_VISIBLE_DEVICES
-{ time ./parallel 4; } >trial_4.out 2>&1
-{ time ./parallel 8; } >trial_8.out 2>&1
-{ time ./parallel 16; } >trial_16.out 2>&1
-{ time ./parallel 32; } >trial_32.out 2>&1
-{ time ./parallel 64; } >trial_64.out 2>&1
-{ time ./parallel 128; } >trial_128.out 2>&1
+{ time ./parallel 8; } >sample.out.txt 2>&1

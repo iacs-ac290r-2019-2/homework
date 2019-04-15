@@ -46,7 +46,7 @@
 // - argv[1] is the first input (number of points)
 int parse_cmdline(int argc, char *argv[]) {
   int nx;
-  if (argc >= 2) {
+  if (argc == 2) {
     nx = atoi(argv[1]); // Number of grid points
     printf("Grid is %d by %d\n\n", nx, nx);
   } else {
@@ -58,38 +58,12 @@ int parse_cmdline(int argc, char *argv[]) {
   return nx;
 }
 
-/*** GPU Constants ***/
-__constant__ int _nx;
-__constant__ int _ny;
-__constant__ double _Lx;
-__constant__ double _Ly;
-__constant__ double _dx;
-__constant__ double _dy;
-__constant__ double _dt;
-__constant__ double _D;
-__constant__ double _pref;
-
 /*******************************************************************************
  * Step IV: Launch the GPU kernel to advance to the next time step with the    *
  *          Jacobi method here.                                                *
  ******************************************************************************/
 
-__global__ void jacobi_solver(double* u, double* u_new) {
-
-  // int ti = blockIdx.x*blockDim.x + threadIdx.x;
-  // int tj = blockIdx.y*blockDim.y + threadIdx.y;
-
-  // if ((ti >= 1 && ti < (_nx-1)) && 
-  //     (tj >= 1 && tj < (_ny-1))) {
-  //   u_new[ti + tj*_nx] = 
-  //       u[ti + tj*_nx] + _pref * (
-  //         u[(ti+1) + tj*_nx] + 
-  //         u[(ti-1) + tj*_nx] + 
-  //         u[ti + (tj+1)*_nx] + 
-  //         u[ti + (tj-1)*_nx] + 
-  //         u[ti + tj*_nx] * (-4)
-  //       );
-  // }
+__global__ void jacobi_solver(double* u, double* u_new, double pref, int nx, int ny) {
 
   __shared__ double s_u[MAX_THREADS_DIM*MAX_THREADS_DIM];
 
@@ -97,25 +71,30 @@ __global__ void jacobi_solver(double* u, double* u_new) {
   int sj = threadIdx.y;
   int ti = blockIdx.x*(blockDim.x-2) + threadIdx.x;
   int tj = blockIdx.y*(blockDim.y-2) + threadIdx.y;
+
+  // printf("(%d, %d) -> (%d, %d)\n", ti, tj, si, sj);
   
-  if (ti < _nx && tj < _ny) {
-    s_u[si + sj*blockDim.x] = u[ti + tj*_nx];
+  if (ti < nx && tj < ny) {
+    s_u[si + sj*blockDim.x] = u[ti + tj*nx];
   }
 
   __syncthreads();
 
-  if ((ti >= 1 && ti < (_nx-1)) && 
-      (tj >= 1 && tj < (_ny-1)) &&
+  if ((ti >= 1 && ti < (nx-1)) && 
+      (tj >= 1 && tj < (ny-1)) &&
       (si > 0 && si < (blockDim.x-1)) &&
       (sj > 0 && sj < (blockDim.y-1))) {
-    u_new[ti + tj*_nx] = 
-        s_u[si + sj*blockDim.x] + _pref * (
+    u_new[ti + tj*nx] = 
+        s_u[si + sj*blockDim.x] + pref * (
           s_u[(si+1) + sj*blockDim.x] + 
           s_u[(si-1) + sj*blockDim.x] + 
           s_u[si + (sj+1)*blockDim.x] + 
           s_u[si + (sj-1)*blockDim.x] + 
           s_u[si + sj*blockDim.x] * (-4)
         );
+
+    // printf("(si, sj) = (%d, %d): %.5lf\n", si, sj, s_u[si + sj*blockDim.x]);
+    // printf("(ui, uj) = (%d, %d): %.5lf -> %.5lf\n", ti, tj, u[ti + tj*nx], u_new[ti + tj*nx]);
   }
 
   return;
@@ -126,24 +105,15 @@ __global__ void jacobi_solver(double* u, double* u_new) {
  *         here.                                                              *
  *****************************************************************************/
 
-__global__ void check_error(double* u, double* error, double time) {
-
-  // int ti = blockIdx.x*blockDim.x + threadIdx.x;
-  // int tj = blockIdx.y*blockDim.y + threadIdx.y;
-
-  // if ((ti >= 1 && ti < (_nx-1)) && 
-  //     (tj >= 1 && tj < (_ny-1))) {
-  //   error[ti + tj*_nx] = u[ti + tj*_nx] / (sin(ti*_dx) * sin(tj*_dy) * exp(-2*_D*time)) - 1;
-  // }
+__global__ void check_error(double* u, double* error, double D, double time, double dx, double dy, int nx, int ny) {
 
   int ti = blockIdx.x*(blockDim.x-2) + threadIdx.x;
   int tj = blockIdx.y*(blockDim.y-2) + threadIdx.y;
 
-  if ((ti >= 1 && ti < (_nx-1)) && 
-      (tj >= 1 && tj < (_ny-1)) &&
+  if (ti < nx && tj < ny &&
       (threadIdx.x > 0 && threadIdx.x < (blockDim.x-1)) &&
       (threadIdx.y > 0 && threadIdx.y < (blockDim.y-1))) {
-    error[ti + tj*_nx] = u[ti + tj*_nx] / (sin(ti*_dx) * sin(tj*_dy) * exp(-2*_D*time)) - 1;
+    error[ti + tj*nx] = u[ti + tj*nx] / (sin(ti*dx) * sin(tj*dy) * exp(-2*D*time)) - 1;
   }
 
   return;
@@ -174,7 +144,7 @@ int main(int argc, char *argv[])
   dx = Lx / (nx - 1);       // Cell width in x-direction
   dy = Ly / (ny - 1);       // Cell width in y-direction
   dt = 0.25*dx*dy/D;        // Limited by diffusive stability
-  sim_time = Lx*Ly/D;       // Arbitrary simulation length
+  sim_time = 0.5*Lx*Ly/D;   // Arbitrary simulation length
   pref = D*dt/(dx*dx);      // Jacobi pre-factor
 
   printf("Parameters\n");
@@ -189,16 +159,6 @@ int main(int argc, char *argv[])
   printf("dy = %.5lf\n", dy);
   printf("dt = %.5lf\n", dt);
   printf("\n");
-
-  cudaMemcpyToSymbol(_nx, &nx, sizeof(int));
-  cudaMemcpyToSymbol(_ny, &ny, sizeof(int));
-  cudaMemcpyToSymbol(_Lx, &Lx, sizeof(double));
-  cudaMemcpyToSymbol(_Ly, &Ly, sizeof(double));
-  cudaMemcpyToSymbol(_dx, &dx, sizeof(double));
-  cudaMemcpyToSymbol(_dy, &dy, sizeof(double));
-  cudaMemcpyToSymbol(_dt, &dt, sizeof(double));
-  cudaMemcpyToSymbol(_D,  &D,  sizeof(double));
-  cudaMemcpyToSymbol(_pref, &pref, sizeof(double));
 
   /*****************************************************************************
    * Step I: Declare, allocate, and initialize memory for the field variable   *
@@ -219,9 +179,11 @@ int main(int argc, char *argv[])
    ****************************************************************************/
 
   double *_u, *_u_new, *_error;
+
   cudaMalloc(&_u, nx*ny * sizeof(double));
   cudaMalloc(&_u_new, nx*ny * sizeof(double));
   cudaMalloc(&_error, nx*ny * sizeof(double));
+
   cudaMemcpy(_u, u, nx*ny * sizeof(double), cudaMemcpyHostToDevice);
 
   // Set the new soln and error to 0
@@ -239,8 +201,6 @@ int main(int argc, char *argv[])
   int threads_x = MAX_THREADS_DIM;
   int threads_y = MAX_THREADS_DIM;
 
-  // int blocks_x = (int) ceil((double) nx / (double) threads_x);
-  // int blocks_y = (int) ceil((double) ny / (double) threads_y);
   int blocks_x = (int) ceil((double) nx / (double) (threads_x - 2));
   int blocks_y = (int) ceil((double) ny / (double) (threads_y - 2));
 
@@ -249,7 +209,6 @@ int main(int argc, char *argv[])
 
   printf("Parallelization\n");
   printf("---------------------------\n");
-  printf("MAX_THREADS_DIM = %d\n", MAX_THREADS_DIM);
   printf("threads_x = %d\n", threads_x); 
   printf("threads_y = %d\n", threads_y); 
   printf("blocks_x  = %d\n", blocks_x); 
@@ -260,24 +219,44 @@ int main(int argc, char *argv[])
   /* Main Time-Stepping Loop */
   /***************************/
 
+  printf("Error at t* = %.5lf is %e\n", 0., error/(nx*ny));
+
+  // printf("t* = %.5lf: ", 0.);
+  // printf("Error = %e, ", error/(nx*ny));
+  // printf("Center = %e\n", 
+  //         0.25*(u[(nx+1)/2 + ((ny+1)/2)*nx] + 
+  //               u[(nx/2+1) + ((ny+1)/2)*nx] + 
+  //               u[(nx+1)/2 + (ny/2+1)*nx] + 
+  //               u[(nx/2+1) + (ny/2+1)*nx]));
+
   for (double time = 0.; time <= sim_time; time += dt) {
     /***************************************************************************
      * Step IV: Launch the GPU kernel to advance to the next time step with    *
      *          the Jacobi method here.                                        *
      **************************************************************************/
 
-    jacobi_solver<<<num_blocks, dim_blocks>>>(_u, _u_new);
+    jacobi_solver<<<num_blocks, dim_blocks>>>(_u, _u_new, pref, nx, ny);
 
     /***************************************************************************
      * Step V: Launch the GPU kernel to calculate the error at each grid point *
      *         here.                                                           *
      **************************************************************************/
 
-    check_error<<<num_blocks, dim_blocks>>>(_u, _error, time);
+    check_error<<<num_blocks, dim_blocks>>>(_u_new, _error, D, time, dx, dy, nx, ny);
 
     // Use thrust to do a parallel reduction on the error
     error = thrust::reduce(t_error, t_error + nx*ny, 0., thrust::plus<double>());
-    printf("Error at t* = %.5lf is %e\n", time*D/(Lx*Lx), error/(nx*ny));
+    // printf("Error at t* = %.5lf is %e\n", time*D/(Lx*Lx), error/(nx*ny));
+    printf("Error at t* = %.5lf is %e\n", (time+dt)*D/(Lx*Lx), error/(nx*ny));
+
+    // cudaMemcpy(u, _u_new, nx*ny * sizeof(double), cudaMemcpyDeviceToHost);
+    // printf("t* = %.5lf: ", (time+dt)*D/(Lx*Lx));
+    // printf("Error = %e, ", error/(nx*ny));
+    // printf("Center = %e\n", 
+    //         0.25*(u[(nx+1)/2 + ((ny+1)/2)*nx] + 
+    //               u[(nx/2+1) + ((ny+1)/2)*nx] + 
+    //               u[(nx+1)/2 + (ny/2+1)*nx] + 
+    //               u[(nx/2+1) + (ny/2+1)*nx]));
 
     // Copy new soln to old. This also blocks to ensure computations are finished.
     cudaMemcpy(_u, _u_new, nx*ny * sizeof(double), cudaMemcpyDeviceToDevice);

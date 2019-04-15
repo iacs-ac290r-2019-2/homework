@@ -195,7 +195,8 @@ def BC0(f):
         f[wyl, j, 5] = f[wyl-1, j-1, 7]
         f[wyl, j, 6] = f[wyl-1, j+1, 8]
         
-    for i in range(1, wyl+1):
+    #for i in range(1, wyl+1):
+    for i in range(2, wyl+1):
         # left
         f[i, b_left, 3] = f[i, b_left+1, 1]
         f[i, b_left, 7] = f[i+1, b_left+1, 5]
@@ -205,7 +206,8 @@ def BC0(f):
         f[i, b_right, 5] = f[i-1, b_right-1, 7]
         f[i, b_right, 8] = f[i+1, b_right-1, 6]
     
-    for i in range(wyh, ny+1):
+    #for i in range(wyh, ny+1):
+    for i in range(wyh, ny):
         # left
         f[i, b_left, 3] = f[i, b_left+1, 1]
         f[i, b_left, 7] = f[i+1, b_left+1, 5]
@@ -217,15 +219,7 @@ def BC0(f):
         
     # square corners
     # top square
-    f[ny, b_left, 7] = f[ny+1, b_left+1, 5] # north-west
-    f[ny, b_right, 8] = f[ny+1, b_right-1, 6] # north-east
-    f[wyh, b_right, 8] = f[wyh+1, b_right-1, 6] # south-west
-    f[wyh, b_left, 7] = f[wyh+1, b_left+1, 5] # south-east
-    # bottom square
-    f[wyl, b_left, 6] = f[wyl-1, b_left+1, 8]
-    f[wyl, b_right, 5] = f[wyh-1, b_right-1, 7]   
-    f[0, b_left, 6] = f[1, b_left+1, 8]
-    f[0, b_right, 5] = f[1, b_right-1, 7]
+
 
     # 4 corners, bounce-back
     f[ny+1, 0, 8] = f[ny, 1, 6]  # north-west

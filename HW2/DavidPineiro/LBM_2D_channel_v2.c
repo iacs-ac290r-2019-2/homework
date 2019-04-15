@@ -5,11 +5,21 @@
 #define ny 60  // points in y direction
 #define nq 9  // D2Q9 LBM
 
+#define wx 30
+#define lx 50
+
 // global constants
-int nt = 2000; // number of time steps
+int wyh = ny - (ny - wx)/2;
+int wyl = (ny - wx)/2;
+
+int b_left = (nx - lx)/2 - 1;
+int b_right = (nx - lx)/2 + lx - 1;
+
+
+int nt = 1000; // number of time steps
 
 double omega = 1.0;  // relaxation parameters, between [0, 2]
-double force = 1e-4;  // external forcing in x direction
+double force = 1e-10;  // external forcing in x direction
 
 double cs2 = 1.0/3;  // sound speed squared
 double cs = 0.57735;  // sound speed 1/sqrt(3)
@@ -18,7 +28,7 @@ double cs4 = 1.0/9;
 double w[nq] = {4.0/9, 1.0/9 ,1.0/9, 1.0/9, 1.0/9, 1.0/36, 1.0/36, 1.0/36, 1.0/36}; // weights for D2Q9
 
 
-int fill_buffer(double f[ny+2][nx+2][nq]){
+int BC0(double f[ny+2][nx+2][nq]){
     
     // north wall, bounce-back
     for (int i = 1; i < nx+1; i++) {
@@ -48,6 +58,41 @@ int fill_buffer(double f[ny+2][nx+2][nq]){
         f[j][nx+1][7] = f[j][1][7];
     }
     
+    // boxes in center
+    for (int j = b_left; j < b_right+1; j++) {
+        // top
+        f[wyh][j][4] = f[wyh+1][j][2];
+        f[wyh][j][8] = f[wyh+1][j-1][6];
+        f[wyh][j][7] = f[wyh+1][j+1][5];
+        // bottom
+        f[wyl][j][2] = f[wyl-1][j][4];
+        f[wyl][j][5] = f[wyl-1][j-1][7];
+        f[wyl][j][6] = f[wyl-1][j+1][8];
+    }
+
+
+    for (int i = 2; i < wyl+1; i++) {
+        // left
+        f[i][b_left][3] = f[i][b_left+1][1];
+        f[i][b_left][7] = f[i+1][b_left+1][5];
+        f[i][b_left][6] = f[i-1][b_left+1][8];
+        // right
+        f[i][b_right][1] = f[i][b_right-1][3];
+        f[i][b_right][5] = f[i-1][b_right-1][7];
+        f[i][b_right][8] = f[i+1][b_right-1][6];
+    }
+
+    for (int i = wyh; i < ny; i++) {
+        // left
+        f[i][b_left][3] = f[i][b_left+1][1];
+        f[i][b_left][7] = f[i+1][b_left+1][5];
+        f[i][b_left][6] = f[i-1][b_left+1][8];
+        // right
+        f[i][b_right][1] = f[i][b_right-1][3];
+        f[i][b_right][5] = f[i-1][b_right-1][7];
+        f[i][b_right][8] = f[i+1][b_right-1][6];
+    }
+
     // 4 corners, bounce-back
     f[ny+1][0][8] = f[ny][1][6];  // north-west
     f[0][0][5] = f[1][1][7];  // south-west
@@ -100,6 +145,28 @@ int macroscopic(double f[ny+2][nx+2][nq], double rho[ny+2][nx+2],
     for (int j = 1; j < ny+1; j++) {
     for (int i = 1; i < nx+1; i++) {
             
+            if ((j >= wyh) || (j <= wyl)) {
+                if ((i <= b_right) && (i >= b_left)){
+                    rho[j][i] = 0.0;
+                    ux[j][i] = 0.0;
+                    uy[j][i] = 0.0;
+                    continue;
+                }
+            }
+
+            if(i==1){
+                ux[j, i] = 1.0/36000.0;
+                uy[j, i] = 0.0;
+                rho[j, i] = 1.0;
+                continue;
+            }
+            
+            if (i == nx){
+                ux[j, i] = 1.0/36000.0;
+                uy[j, i] = 0.0;
+                rho[j, i] = 1.0;
+                continue;
+            }
             // numpy version: rho[j, i] = f[j, i, :].sum()
             rho[j][i] = 0.0;
             for (int q = 0; q < nq; q++) {
@@ -129,7 +196,20 @@ int equilibrium(double rho[ny+2][nx+2], double ux[ny+2][nx+2],
 
     for (int j = 1; j < ny+1; j++) {
     for (int i = 1; i < nx+1; i++) {
-            
+        if ((j >= wyh) || (j <= wyl)) {
+                if ((i <= b_right) && (i >= b_left)){
+                    feq[j][i][0] = 0.0;
+                    feq[j][i][1] = 0.0;
+                    feq[j][i][2] = 0.0;
+                    feq[j][i][3] = 0.0;
+                    feq[j][i][4] = 0.0;
+                    feq[j][i][5] = 0.0;
+                    feq[j][i][6] = 0.0;
+                    feq[j][i][7] = 0.0;
+                    feq[j][i][8] = 0.0;
+                    continue;
+                }
+            }
         // == expressions that can be reused ==  
         // Comments are the corresponding variable names in Sauro Succi's Fortran code
         ux_d_cs2 = ux[j][i] / cs2;  // ui
@@ -162,11 +242,16 @@ int equilibrium(double rho[ny+2][nx+2], double ux[ny+2][nx+2],
 int collision(double f[ny+2][nx+2][nq], double feq[ny+2][nx+2][nq]){
 
     for (int j = 1; j < ny+1; j++) {
-    for (int i = 1; i < nx+1; i++) {
-        for (int q = 0; q < nq; q++) {
+        for (int i = 1; i < nx+1; i++) {
+            for (int q = 0; q < nq; q++) {
+                if ((j >= wyh) || (j <= wyl)) {
+                    if ((i <= b_right) && (i >= b_left)){
+                        continue;
+                    }
+                }
                 f[j][i][q] = (1.0 - omega)*f[j][i][q] + omega*feq[j][i][q];
+            }
         }
-    }
     }
     return 0;
 }
@@ -175,15 +260,20 @@ int collision(double f[ny+2][nx+2][nq], double feq[ny+2][nx+2][nq]){
 int apply_forcing(double f[ny+2][nx+2][nq], double force){
     
     for (int j = 1; j < ny+1; j++) {
-    for (int i = 1; i < nx+1; i++) { 
-            f[j][i][1] += force;
-            f[j][i][5] += force;
-            f[j][i][8] += force;
+        for (int i = 1; i < nx+1; i++) { 
+            if ((j >= wyh) || (j <= wyl)) {
+                if ((i <= b_right) && (i >= b_left)){
+                    continue;
+                }
+            }
+                f[j][i][1] += force;
+                f[j][i][5] += force;
+                f[j][i][8] += force;
 
-            f[j][i][3] -= force;
-            f[j][i][6] -= force;
-            f[j][i][7] -= force;
-    }
+                f[j][i][3] -= force;
+                f[j][i][6] -= force;
+                f[j][i][7] -= force;
+        }
     }
     return 0;
 }
@@ -194,6 +284,14 @@ int initialize(double f[ny+2][nx+2][nq], double feq[ny+2][nx+2][nq],
     // uniform density
     for (int j = 1; j < ny+1; j++) {
     for (int i = 1; i < nx+1; i++) { 
+        if ((j >= wyh) || (j <= wyl)) {
+                if ((i <= b_right) && (i >= b_left)){
+                    rho[j][i] = 0.0;
+                    ux[j][i] = 0.0;
+                    uy[j][i] = 0.0;
+                    continue;
+                }
+            }
         rho[j][i] = 1.0;
         ux[j][i] = 0.0;
         uy[j][i] = 0.0;
@@ -202,6 +300,7 @@ int initialize(double f[ny+2][nx+2][nq], double feq[ny+2][nx+2][nq],
     
     // use equilibrium as initial population
     equilibrium(rho, ux, uy, feq);
+
     for (int j = 1; j < ny+1; j++) {
     for (int i = 1; i < nx+1; i++) {
         for (int q = 0; q < nq; q++) {
@@ -213,7 +312,7 @@ int initialize(double f[ny+2][nx+2][nq], double feq[ny+2][nx+2][nq],
     return 0;
 }
 
-int main(){
+int main(int argc, char** argv){
 
     // prognostic variables
     double f[ny+2][nx+2][nq] = {{{0}}}; // particle population. 
@@ -228,12 +327,12 @@ int main(){
     initialize(f, feq, rho, ux, uy);
     
     for (int it = 0; it < nt; it++) {
-        fill_buffer(f);
+        BC0(f);
         streaming(f);
         macroscopic(f, rho, ux, uy);
         equilibrium(rho, ux, uy, feq);
         collision(f, feq);
-        apply_forcing(f, force);
+        // apply_forcing(f, force);
     }
 
     // print result to check

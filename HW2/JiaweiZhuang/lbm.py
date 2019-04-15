@@ -2,19 +2,36 @@ import numpy as np
 from numba import jit
 import xarray as xr
 
+# == parse command line arguments
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--omega", type=float, default=1.0,
+                    help="relaxation parameter, between [0, 2]")
+parser.add_argument("--force", type=float, default=1e-5,
+                    help="external forcing in x direction")
+parser.add_argument("--wx", type=int, default=30,
+                    help="width of the narrowing in region, between [0, 60]")
+parser.add_argument("--nt", type=int, default=1000,
+                    help="total number of time steps")
+args = parser.parse_args()
+
+print("Arguments:", args)
+
 # == constants ==
+nt = args.nt  # time steps
 nx = 200  # points in x direction
 ny = 60  # points in y direction
 nq = 9  # D2Q9 LBM
-omega = 1 # relaxation parameters, between [0, 2]
-force = 1e-5  # external forcing in x direction
+omega = args.omega # relaxation parameters, between [0, 2]
+force = args.force  # external forcing in x direction
 
 cs2 = 1/3  # sound speed squared
 cs = np.sqrt(cs2)  # sound speed
 cs4 = cs2**2
 
 # BC
-wx = 30
+wx = args.wx
 lx = 50
 wyh = int(ny - (ny - wx)/2)
 wyl = int((ny - wx)/2)
@@ -259,14 +276,14 @@ def lbm_solver(f, rho, ux, uy, nt):
 
 
 if __name__ == "__main__":
-    filename = 'lbm_w{0}.nc'.format(wx)  # output file
-    nt = 4000  # time steps
+    filename = 'lbm_w{0}_omega{1}_force{2}_nt{3}.nc'.format(wx, omega, force, nt)  # output file
 
     print('Important parameters:')
     print('Time steps:', nt)
     print('Narrowing width w:', wx)
     print('Forcing:', force)
     print('Lelaxation omega:', omega)
+    print('viscosity: ', cs2*(1/omega-0.5))
     print('================ \n')
 
     print('running solver... \n')

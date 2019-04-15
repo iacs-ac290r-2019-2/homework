@@ -6,10 +6,14 @@ import xarray as xr
 import argparse
 
 parser = argparse.ArgumentParser()
+parser.add_argument("--case", type=int, default=1,
+                    help="boundary condition type (1=periodic, 2=imposed)")
 parser.add_argument("--omega", type=float, default=1.0,
                     help="relaxation parameter, between [0, 2]")
-parser.add_argument("--force", type=float, default=1e-5,
+parser.add_argument("--force", type=float, default=1e-8,
                     help="external forcing in x direction")
+parser.add_argument("--u_imposed", type=float, default=1.0/36000.0,
+                    help="imposed velocity at boundaries (needs case==2)")
 parser.add_argument("--wx", type=int, default=30,
                     help="width of the narrowing in region, between [0, 60]")
 parser.add_argument("--nt", type=int, default=1000,
@@ -18,13 +22,22 @@ args = parser.parse_args()
 
 print("Arguments:", args)
 
+assert args.case in (1, 2), 'case must be 1 or 2'
+
 # == constants ==
 nt = args.nt  # time steps
 nx = 200  # points in x direction
 ny = 60  # points in y direction
 nq = 9  # D2Q9 LBM
 omega = args.omega # relaxation parameters, between [0, 2]
-force = args.force  # external forcing in x direction
+
+case = args.case
+if case == 1:
+    force = args.force  # external forcing in x direction
+elif case == 2:
+    force = 0.0  # make sure force is zero for second boundary type
+
+u_imposed = args.u_imposed  # imposing velocity at inlet/outlet
 
 cs2 = 1/3  # sound speed squared
 cs = np.sqrt(cs2)  # sound speed
@@ -136,15 +149,18 @@ def streaming(f):
             
             
 @jit
-def macroscopic(f, rho, ux, uy):
+def macroscopic_case1(f, rho, ux, uy):
+    '''
+    Computing macroscopic variables for case1, periodic boundary
+    '''
     
     for j in range(1, ny+1):
         for i in range(1, nx+1):
             if j >= wyh or j <= wyl:
                 if i <= b_right and i >= b_left:
-                    rho[j, i] = np.nan  #1.0
-                    ux[j, i] = np.nan  #0.0
-                    uy[j, i] = np.nan  #0.0
+                    rho[j, i] = np.nan
+                    ux[j, i] = np.nan
+                    uy[j, i] = np.nan
                     continue
             rho[j, i] = f[j, i, :].sum()
             
@@ -159,7 +175,50 @@ def macroscopic(f, rho, ux, uy):
 
 
 @jit
-def BC0(f):
+def macroscopic_case2(f, rho, ux, uy):
+    '''
+    Computing macroscopic variables for case2, with imposed velocity
+    '''
+    
+    for j in range(1, ny+1):
+        for i in range(1, nx+1):
+            if j >= wyh or j <= wyl:
+                if i <= b_right and i >= b_left:
+                    rho[j, i] = np.nan
+                    ux[j, i] = np.nan
+                    uy[j, i] = np.nan
+                    continue
+            
+            if i == 1:
+                ux[j, i] = u_imposed
+                uy[j, i] = 0.0
+                rho[j, i] = 1.0
+                continue
+            
+            if i == nx:
+                ux[j, i] = u_imposed
+                uy[j, i] = 0.0
+                rho[j, i] = 1.0
+                continue
+            
+            rho[j, i] = f[j, i, :].sum()
+            
+                # unroll loop explictly to avoid summing over zeros
+            ux[j, i] = (f[j, i, 1] + f[j, i, 5] + f[j, i, 8] 
+                           - f[j, i, 3] - f[j, i, 6] - f[j, i, 7]
+                          )/rho[j, i]
+
+            uy[j, i] = (f[j, i, 2] + f[j, i, 5] + f[j, i, 6] 
+                           - f[j, i, 4] - f[j, i, 7] - f[j, i, 8]
+                          )/rho[j, i]
+
+
+@jit
+def BC_case1(f):
+    '''
+    Applying boundary conditions for case1, periodic boundary
+    '''
+
     # north wall, bounce-back
     for i in range(1, nx+1):
         f[ny+1, i, 4] = f[ny, i, 2]
@@ -216,10 +275,6 @@ def BC0(f):
         f[i, b_right, 1] = f[i, b_right-1, 3]
         f[i, b_right, 5] = f[i-1, b_right-1, 7]
         f[i, b_right, 8] = f[i+1, b_right-1, 6]
-        
-    # square corners
-    # top square
-
 
     # 4 corners, bounce-back
     f[ny+1, 0, 8] = f[ny, 1, 6]  # north-west
@@ -227,7 +282,65 @@ def BC0(f):
     f[ny+1, nx+1, 7] = f[ny, nx, 5]  # north-east
     f[0, nx+1, 6] = f[1, nx, 8]  # south-east
     
+
+@jit
+def BC_case2(f):
+    '''
+    Applying boundary conditions for case1, imposed velocity
+    '''
     
+    # north wall, bounce-back
+    for i in range(1, nx+1):
+        f[ny+1, i, 4] = f[ny, i, 2]
+        f[ny+1, i, 8] = f[ny, i+1, 6]
+        f[ny+1, i, 7] = f[ny, i-1, 5]
+        
+    # south wall, bounce-back
+    for i in range(1, nx+1):
+        f[0, i, 2] = f[1, i, 4]
+        f[0, i, 6] = f[1, i-1, 8]
+        f[0, i, 5] = f[1, i+1, 7]
+    
+    for j in range(b_left, b_right+1):
+        # top
+        f[wyh, j, 4] = f[wyh+1, j, 2]
+        f[wyh, j, 8] = f[wyh+1, j-1, 6]
+        f[wyh, j, 7] = f[wyh+1, j+1, 5]
+        # bottom 
+        f[wyl, j, 2] = f[wyl-1, j, 4]
+        f[wyl, j, 5] = f[wyl-1, j-1, 7]
+        f[wyl, j, 6] = f[wyl-1, j+1, 8]
+        
+    for i in range(2, wyl+1):
+        # left
+        f[i, b_left, 3] = f[i, b_left+1, 1]
+        f[i, b_left, 7] = f[i+1, b_left+1, 5]
+        f[i, b_left, 6] = f[i-1, b_left+1, 8]
+        # right
+        f[i, b_right, 1] = f[i, b_right-1, 3]
+        f[i, b_right, 5] = f[i-1, b_right-1, 7]
+        f[i, b_right, 8] = f[i+1, b_right-1, 6]
+    
+    for i in range(wyh, ny):
+        # left
+        f[i, b_left, 3] = f[i, b_left+1, 1]
+        f[i, b_left, 7] = f[i+1, b_left+1, 5]
+        f[i, b_left, 6] = f[i-1, b_left+1, 8]
+        #right
+        f[i, b_right, 1] = f[i, b_right-1, 3]
+        f[i, b_right, 5] = f[i-1, b_right-1, 7]
+        f[i, b_right, 8] = f[i+1, b_right-1, 6]
+        
+
+# selecting the proper function based on boundary type
+if  case == 1:
+    BC = BC_case1
+    macroscopic = macroscopic_case1
+elif case == 2:
+    BC = BC_case2
+    macroscopic = macroscopic_case2
+
+
 @jit
 def initialize(f, feq, rho, ux, uy):
     '''
@@ -261,7 +374,7 @@ def lbm_solver(f, rho, ux, uy, nt):
     initialize(f, feq, rho, ux, uy)
     
     for it in range(0, nt):
-        BC0(f)
+        BC(f)
         streaming(f)
         macroscopic(f, rho, ux, uy)
         equilibrium(rho, ux, uy, feq)
@@ -270,9 +383,10 @@ def lbm_solver(f, rho, ux, uy, nt):
 
 
 if __name__ == "__main__":
-    filename = 'lbm_w{0}_omega{1}_force{2}_nt{3}.nc'.format(wx, omega, force, nt)  # output file
+    filename = 'lbm_bc{0}_w{1}_omega{2}_force{3}_nt{4}.nc'.format(case, wx, omega, force, nt)  # output file
 
     print('Important parameters:')
+    print('Boundary type:', case)
     print('Time steps:', nt)
     print('Narrowing width w:', wx)
     print('Forcing:', force)

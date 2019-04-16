@@ -1,0 +1,27 @@
+\begin{solution} 
+
+We first need to ensure a Reynolds number of $10^{-2}$.
+
+The Reynolds number is computed by
+
+    \begin{align*}
+      Re = \frac{uH}{\nu}
+    \end{align*}
+
+The characteristic length $H = 60$ here. $u$ is set to be the velocity at $x=0$. $\nu$ is the kinematic viscosity, computed from 
+    \begin{align*}
+        \nu = c_s^2 (\frac{1}{\Omega} - \frac{1}{2})
+    \end{align*}
+
+where $c_s^2 = \frac{1}{3}$ is sound speed squared. $\Omega$ is the relaxation frequency in BGK operator. In our code, we set $\Omega = 1$, indicating a full-relaxation scheme (except for the last question that requires changing $\Omega$). Thus $\nu = \frac{1}{2} c_s^2 = 1/6$.
+
+The desired $u$ can be computed from
+    \begin{align*}
+          u & = \frac{Re \cdot \nu}{H} \\
+            & = \frac{0.01 \cdot 1/6}{60} \\
+            & = 2.8 \times 10^{-5}
+    \end{align*}
+
+For periodic boundary (case 1), we tweak forcing so that the steady $u(x=0)$ is around  $2.8 \times 10^{-5}$. We find the forcing to be $1 \times 10^{-8}$. For non-periodic boundary, we directly apply this velocity to the boundary grid points. Both cases achieve steady state in about 8000 time steps.
+
+\end{solution}

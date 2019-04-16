@@ -13,4 +13,4 @@ To submit, run
 sbatch submit.sh
 ```
 
-The numeric errors are listed in the stdout, and the timing report is in the stderr. For reference, you can find my results in `sample.out.txt` and `sample.err.txt`. 
+The default runs a 8x8 grid with `MAX_THREADS_DIM`=18. The numeric errors and the elapsed time will be reported in `sample.out.txt`. 

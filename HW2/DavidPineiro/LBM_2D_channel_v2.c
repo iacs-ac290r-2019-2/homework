@@ -44,19 +44,6 @@ int BC0(double f[ny+2][nx+2][nq]){
         f[0][i][5] = f[1][i+1][7];
     }
     
-    // // west interface, periodic
-    // for (int j = 1; j < ny+1; j++) {
-    //     f[j][0][1] = f[j][nx][1];
-    //     f[j][0][5] = f[j][nx][5];
-    //     f[j][0][8] = f[j][nx][8];
-    // }
-    
-    // // east interface, periodic
-    // for (int j = 1; j < ny+1; j++) {
-    //     f[j][nx+1][3] = f[j][1][3];
-    //     f[j][nx+1][6] = f[j][1][6];
-    //     f[j][nx+1][7] = f[j][1][7];
-    // }
     
     // boxes in center
     for (int j = b_left; j < b_right+1; j++) {
@@ -92,13 +79,7 @@ int BC0(double f[ny+2][nx+2][nq]){
         f[i][b_right][5] = f[i-1][b_right-1][7];
         f[i][b_right][8] = f[i+1][b_right-1][6];
     }
-
-    // // 4 corners, bounce-back
-    // f[ny+1][0][8] = f[ny][1][6];  // north-west
-    // f[0][0][5] = f[1][1][7];  // south-west
-    // f[ny+1][nx+1][7] = f[ny][nx][5];  // north-east
-    // f[0][nx+1][6] = f[1][nx][8];  // south-east
-
+    
     return 0;
 
 }

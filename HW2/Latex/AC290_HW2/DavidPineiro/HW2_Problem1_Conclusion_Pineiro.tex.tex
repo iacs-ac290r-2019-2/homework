@@ -1,0 +1,7 @@
+\begin{solution}
+In conclusion, we simulated a periodic channel and a non-periodic channel using the LBM. The results were computed rather quickly   highlighting the efficiency of the LBM at producing reliable results when simulating flows.\\
+\\
+To test the validity of our approach and design for implementing LBM we originally coded our design in Python. The results appeared accurate and held to the boundary conditions we constrained the problem to. Additionally, the organization that we used for the code follows that of Sauro Succi. We then translated our code and methods to C in order to achieve more efficient computational speeds enabling us to run our LBM to higher iteration numbers quicker for both cases. We interpreted the output of the C method in Python for better visualization using various libraries. \\
+\\
+The periodic channel can be found on the file "LBM\_2D\_channel\_v1.c" and the continuous channel can be found in the file "LBM\_2D\_channel\_v2.c". In the files one can change various parameters associated with the environment that the flow is in such as H, L, w, l, the forces, etc. 
+\end{solution}

@@ -25,7 +25,7 @@
 #include <thrust/reduce.h>
 
 #define PI 3.14159265358979323846
-#define MAX_THREADS_DIM 16        // Note that this depends on the hardware
+#define MAX_THREADS_DIM 18        // Note that this depends on the hardware
 
 /* Note on the structure of this file:
  *  - Cuda device constant memory declarations are at the top

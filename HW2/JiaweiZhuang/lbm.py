@@ -402,7 +402,7 @@ if __name__ == "__main__":
     dr_ux = xr.DataArray(ux[1:-1, 1:-1], name='ux', dims=('y', 'x'), coords=coords)
     dr_uy = xr.DataArray(uy[1:-1, 1:-1], name='uy', dims=('y', 'x'), coords=coords)
     dr_rho = xr.DataArray(rho[1:-1, 1:-1], name='rho', dims=('y', 'x'), coords=coords)
-    dr_p = dr_rho.rename('p') / 6  # pressure field 
+    dr_p = dr_rho.rename('p') / 3  # pressure field 
 
     ds = xr.merge([dr_ux, dr_uy, dr_rho, dr_p])
     print('writing to file:', filename)
